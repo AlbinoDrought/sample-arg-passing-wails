@@ -1,6 +1,7 @@
 package main
 
 import (
+	"changeme/internal/oneinstance"
 	"embed"
 
 	"github.com/wailsapp/wails/v2"
@@ -12,11 +13,17 @@ import (
 var assets embed.FS
 
 func main() {
+	instance, err := oneinstance.Ensure()
+	if err != nil {
+		println("Another instance is already running. I sent it some args, everything is okay, you don't need to worry. Here's the error anyways:", err.Error())
+		return
+	}
+
 	// Create an instance of the app structure
-	app := NewApp()
+	app := NewApp(instance)
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:  "sample-arg-pass",
 		Width:  1024,
 		Height: 768,
